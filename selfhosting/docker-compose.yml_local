@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  pgdb:
+    image: postgres:13-alpine
+    env_file:
+      - .env.example
+    ports:
+      - '5432:5432'
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - portaler
+  rediscache:
+    image: bitnami/redis:6.0
+    env_file:
+      - .env.example
+    ports:
+      - '6379:6379'
+    networks:
+      - portaler
+  discord_bot:
+    image: mawburn/portaler-bot:latest
+    env_file:
+      - .env.example
+    environment:
+      - API_URL=https://api_server/
+    depends_on:
+      - pgdb
+      - rediscache
+    networks:
+      - portaler
+  api_server:
+    image: mawburn/portaler:latest
+    env_file:
+      - .env.example
+    ports:
+      - '7777:4242'
+    depends_on:
+      - pgdb
+      - rediscache
+    networks:
+      - portaler
+  bin_etl:
+    image: mawburn/portaler-etl:latest
+    env_file:
+      - .env.example
+    depends_on:
+      - pgdb
+      - rediscache
+      - api_server
+    networks:
+      - portaler
+
+networks:
+  portaler:
+    driver: 'bridge'
+
+volumes:
+  db_data: {}
