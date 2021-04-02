@@ -86,7 +86,7 @@ cd /usr/local/etc/docker-portaler/portaler-core/selfhosting
 You can use any text editor you like. If you are using Debian you will most likely have `vi` and `nano` installed. If you've never used `vi` before, i suggest you use `nano` instead.
 If you dont have anything but `vi` installed - you can either use google-fu and learn how to use it or just `apt-get install -y nano` to have `nano` installed.
 ```Shell
-nano .env.
+nano .env
 ```
 Edit those values:
 
