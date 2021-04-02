@@ -4,9 +4,7 @@ services:
   pgdb:
     image: postgres:13-alpine
     env_file:
-      - .env.example
-    ports:
-      - '5432:5432'
+      - .env
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -14,15 +12,13 @@ services:
   rediscache:
     image: bitnami/redis:6.0
     env_file:
-      - .env.example
-    ports:
-      - '6379:6379'
+      - .env
     networks:
       - portaler
   discord_bot:
     image: mawburn/portaler-bot:latest
     env_file:
-      - .env.example
+      - .env
     environment:
       - API_URL=https://api_server/
     depends_on:
@@ -33,9 +29,9 @@ services:
   api_server:
     image: mawburn/portaler:latest
     env_file:
-      - .env.example
+      - .env
     ports:
-      - '7777:4242'
+      - '127.0.0.1:7777:4242'
     depends_on:
       - pgdb
       - rediscache
