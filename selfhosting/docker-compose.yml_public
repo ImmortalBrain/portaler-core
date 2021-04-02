@@ -40,7 +40,7 @@ services:
   bin_etl:
     image: mawburn/portaler-etl:latest
     env_file:
-      - .env.example
+      - .env
     depends_on:
       - pgdb
       - rediscache
