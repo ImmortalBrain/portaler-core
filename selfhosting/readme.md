@@ -1,3 +1,10 @@
+# TODO
+### FIX TYPOS
+### Add certbot
+### Add https config
+### Add updating
+### Add logging
+
 # Selfhosting Portaler
 
 
@@ -72,14 +79,14 @@ You don't need to do both options so pick only the one you need.
 
 ## Option 1 - Steps for local version:
 
-Edit `docker-compose.yml` and `.env.example`:
+Edit `.env` file:
 ```Shell
-cd /usr/local/etc/docker-portaler/portaler-core/docker
+cd /usr/local/etc/docker-portaler/portaler-core/selfhosting
 ```
 You can use any text editor you like. If you are using Debian you will most likely have `vi` and `nano` installed. If you've never used `vi` before, i suggest you use `nano` instead.
-If you dont have anything but `vi` installed - you can either use google-fu and learn how to use it or just `apt-get install -y nano` to have `nano` installed
+If you dont have anything but `vi` installed - you can either use google-fu and learn how to use it or just `apt-get install -y nano` to have `nano` installed.
 ```Shell
-nano .env.example
+nano .env.
 ```
 Edit those values:
 
@@ -90,20 +97,17 @@ Uncomment **DISABLE_AUTH=true** (that means delete the # before this line)
 Leave everything else as is.
 
 `ctrl-x` to exit the editor, dont forget to save your changes.
+
+Rename `docker-compose.yml_local` to `docker-compose.yml`:
 ```Shell
-nano docker-compose.yml
+mv docker-compose.yml_local docker-compose.yml
 ```
-Delete everything related to the discord bot container. That means everything beginning with **discord_bot** and ending before **api_server** 
-<img src="https://i.imgur.com/6gU6uVn.png" width="250px" alt="screenshot" />
-<<This is the part you need to delete.
 
-`ctrl-x` to exit, dont forget to save your changes.
-
-When you are done editing the files - start the containers:
+Start the containers:
 ```Shell
 docker-compose up -d
 ```
-If you realized that you've done something wrong you can simply edit `.env.example` or `docker-compose.yml` and `docker-compose up -d` again.
+If you realized that you've done something wrong you can simply edit `.env` and `docker-compose up -d` again.
 
 After the process is done wait for a couple of minutes and check that all containers are up and running:
 ```Shell
@@ -156,11 +160,11 @@ Now that we have this settled lets build our frontend:
 cd /usr/local/etc/docker-portaler/portaler-core
 yarn build:front
 ```
-You are going to use Nginx to serve the webpage, so you need to install it first:
+I suggest you use Nginx to serve the webpage, but you need to install it first:
 ```Shell
 apt-get install -y nginx
 ```
-Edit Nginx configuration  files. You can use any text editor you like. If you are using Debian you will most likely have `vi` and `nano` installed. If you've never used `vi` before, i suggest you use `nano` instead.
+Edit Nginx configuration files. You can use any text editor you like. If you are using Debian you will most likely have `vi` and `nano` installed. If you've never used `vi` before, i suggest you use `nano` instead.
 If you dont have anything but `vi` installed - you can either use google-fu and learn how to use it or just `apt-get install nano` to have `nano` installed.
 ```Shell
 nano /etc/nginx/conf.d/portaler.conf
@@ -208,8 +212,8 @@ You will need **ClientID**, **ClientSecret**, **PublicKey** from the "General In
 
 Now that you have those values you can set-up your docker containers:
 ```Shell
-cd /usr/local/etc/docker-portaler/portaler-core/docker
-nano .env.example
+cd /usr/local/etc/docker-portaler/portaler-core/selfhosting
+nano .env
 ```
 You need to edit those values:
 
@@ -235,11 +239,15 @@ Leave everything else as is.
 
 **Important: do NOT invite your bot to your server before you are done setting up docker containers. The bot has to join you discord server with api already running. If your bot is already on your server - kick it.**
 
-When you are done editing the file - start the containers
+Rename `docker-compose.yml_public` to `docker-compose.yml`:
+```Shell
+mv docker-compose.yml_public docker-compose.yml
+```
+Start the containers:
 ```Shell
 docker-compose up -d
 ```
-If you realized that you've done something wrong you can simply edit `.env.example` and ``docker-compose up -d`` again.
+If you realized that you've done something wrong you can simply edit `.env` and ``docker-compose up -d`` again.
 
 After the process is done wait for a couple of minutes and check that all containers are up and running:
 ```Shell
@@ -257,16 +265,16 @@ Now you can invite your bot to your server:
 
 Go to https://discordapi.com/permissions.html#0
 
-Tick "manage roles" and insert your bots **ClientID** (the one you used while editing the `.env.example` file). Click on the generated link below and add the bot to your server (dont forget that you need to have permissions to do that).
+Tick "manage roles" and insert your bots **ClientID** (the one you used while editing the `.env` file). Click on the generated link below and add the bot to your server (dont forget that you need to have permissions to do that).
 
-The bot should've created a new role called **portaler** or whatever you've set in your `.env.example.` Grant this role to yourself.
+The bot should've created a new role called **portaler** or whatever you've set in your `.env` Grant this role to yourself.
 
 Open your web-browser and go to http://yoursubdomain.yourdomain:80
 Try logging in using discord OAuth - you will most likelly get an error while you try that. In order to fix that error you need to add your subdomain to the subdomain list. To do that you first need to get the id of your server:
 ```Shell
 curl -H "Authorization: Bearer youradminkey" http://localhost/api/admin/list
 ```
-"youradminkey" is the **ADMIN_KEY** you've set up in your `.env.example`.
+"youradminkey" is the **ADMIN_KEY** you've set up in your `.env`.
 
 Look for `"id":number`. Most likelly your id wil be 1.
 
