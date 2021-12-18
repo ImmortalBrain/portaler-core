@@ -129,4 +129,5 @@ Launch the script and pray to the gods it works. There will be several prompts f
 ```
 
 It works? Wow, congratulations!
+
 It doesn't? Ping me (@logoffski) on the discord server and i'll try to fix it
