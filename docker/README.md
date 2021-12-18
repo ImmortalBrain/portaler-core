@@ -103,7 +103,7 @@ Brief explanation of everything you need to edit:
 
 **SUBDOMAIN=** Fill it with your subdomain name, not including the domain name (ex. yoursubdomain and NOT yoursubdomain.yourdomain.com)
 
-**ADMIN_KEY=** Chose one for yourself but don't make it too long
+**ADMIN_KEY=** A random string, choose one for yourself, but don't make it too long
 
 **CERTBOT_EMAIL=** Your valid email. It will be used for certbot notifications in case something goes wrong
 
@@ -111,20 +111,22 @@ Brief explanation of everything you need to edit:
 
 **DISCORD_REDIRECT_URI=** http://yoursubdomain.yourdomain.com/api/auth/callback (same stuff you've put into the Discord OAuth page)
 
-**DISCORD_BOT_TOKEN=** Token from "Bot" page.
+**DISCORD_BOT_TOKEN=** Token from the "Bot" page.
 
-**DISCORD_PUBLIC_TOKEN**= PublicKey from "General Information" page.
+**DISCORD_PUBLIC_TOKEN**= PublicKey from the "General Information" page.
 
-**DISCORD_CLIENT_TOKEN**= ClientID from "General Information" page.
+**DISCORD_CLIENT_TOKEN**= ClientID from the "General Information" page.
 
-**DISCORD_SECRET_TOKEN**= ClientSecret from "General Information" page.
+**DISCORD_SECRET_TOKEN**= ClientSecret from the "General Information" page.
 
 `ctrl-x` to exit, don't forget to save your changes.
 
-Launch the script and pray to the gods it works. There will be several prompts for use input during the installation, dont miss those.
+
+Launch the script and pray to the gods it works. There will be several prompts for user input during the installation, dont miss those.
 
 ```Shell
 ./install.sh
 ```
 
 It works? Wow, congratulations!
+It doesn't? Ping me (@logoffski) on the discord server and i'll try to fix it
