@@ -1,28 +1,12 @@
 version: '3.7'
 
 services:
-
-  nginx-certbot:
-    image: logoffski/portaler-nginx-certbot:v1
-    env_file:
-      - .env
-    restart: unless-stopped
-    ports:
-      - '80:80'
-      - '443:443'
-    depends_on:
-      - api_server
-      - rediscache
-    networks:
-      - portaler
-    volumes:
-      - nginx_secrets:/etc/letsencrypt
-      - ./user_conf.d:/etc/nginx/user_conf.d
   pgdb:
     image: postgres:13-alpine
     env_file:
-      - .env
-    restart: unless-stopped
+      - .env.example
+    ports:
+      - '5432:5432'
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -30,15 +14,15 @@ services:
   rediscache:
     image: bitnami/redis:6.0
     env_file:
-      - .env
-    restart: unless-stopped
+      - .env.example
+    ports:
+      - '6379:6379'
     networks:
-     - portaler
+      - portaler
   discord_bot:
     image: mawburn/portaler-bot:latest
     env_file:
-      - .env
-    restart: unless-stopped
+      - .env.example
     environment:
       - API_URL=https://api_server/
     depends_on:
@@ -49,10 +33,9 @@ services:
   api_server:
     image: mawburn/portaler:latest
     env_file:
-      - .env
-    restart: unless-stopped
+      - .env.example
     ports:
-      - '127.0.0.1:7777:4242'
+      - '7777:4242'
     depends_on:
       - pgdb
       - rediscache
@@ -61,7 +44,7 @@ services:
   bin_etl:
     image: mawburn/portaler-etl:latest
     env_file:
-      - .env
+      - .env.example
     depends_on:
       - pgdb
       - rediscache
@@ -74,5 +57,4 @@ networks:
     driver: 'bridge'
 
 volumes:
-  nginx_secrets:
   db_data: {}
