@@ -13,7 +13,7 @@ while true; do
  apt-get update; apt-get install -y docker-ce docker-ce-cli containerd.io;
  curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
  chmod +x /usr/local/bin/docker-compose; 
- sleep 10; systemctl docker start; break;;
+ sleep 10; systemctl start docker; break;;
         [Nn]* ) break;;
         * ) echo "Please answer yes(y) or no(n)";;
     esac
@@ -30,12 +30,13 @@ echo -e "       ${GREEN}https://discord.com/oauth2/authorize?client_id=${DISCORD
 while true; do
     read -p $'       \e[31mType \"DONE\" when you\'ve finished inviting your bot\e[0m \n          > ' CONT
     if [ "$CONT" = "DONE" ]; then
-        echo  "Please wait....\n"
+        echo -e "Sleeping to make sure DB propagates....\n"
         sleep 10
         curl -sk -H "Authorization: Bearer $ADMIN_KEY" https://localhost/api/admin/list/ | awk -F{ '{for(i=1;i<=NF;i++){ print $i;}}'
         read -p $'\n       \e[31mPlease enter the ID of your server from the list above\e[0m \n          > ' ID
         curl -sk -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" --request POST --data "{\"id\": ${ID}, \"subdomain\": \"${SUBDOMAIN}\" }" https://localhost/api/admin/addSubdomain
-        sleep 5
+        echo -e "\n       ${GREEN}Almost done btw${RESTORE}"
+        sleep 10
         docker-compose restart
         echo -e "\n       ${GREEN}Congratulations! You are done. Dont forget to give yourself the "${DISCORD_ROLE}" role on your discord server${RESTORE}"
         break;
