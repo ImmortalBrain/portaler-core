@@ -1,5 +1,5 @@
 #!/bin/bash
-source .env
+source .env.docker
 RESTORE='\033[0m'
 RED='\033[00;31m'
 GREEN='\033[00;32m'
@@ -17,19 +17,26 @@ while true; do
         * ) echo "Please answer yes(y) or no(n)";;
     esac
 done
-
 mkdir user_conf.d
-#curl http://example.com --output ./user_conf.d/portaler.conf
-
+curl https://raw.githubusercontent.com/Logoffski/portaler-core/docker_test/docker/portaler.conf  --output ./user_conf.d/portaler.conf
+curl https://raw.githubusercontent.com/Logoffski/portaler-core/docker_test/docker/docker-compose.yml  --output ./docker-compose.yml
+sed -i "s/example.com/"${SUBDOMAIN}"."${HOST}"/g" ./user_conf.d/portaler.conf
+sleep 1
 docker-compose up -d
-
+sleep 5
 echo -e "       ${RED}Open the link below in your browser to invite the bot to your discord server${RESTORE}"
 echo -e "       ${GREEN}https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_TOKEN}&scope=bot&permissions=268435456${RESTORE}"
-
-read -p $'       \e[31mType \"DONE\" when you\'ve finished inviting your bot\e[0m \n          > ' CONT
-if [ "$CONT" = "DONE" ]; then
- curl -s -H "Authorization: Bearer $ADMIN_KEY" https://$SUBDOMAIN.$HOST/api/admin/list | awk -F{ '{for(i=1;i<=NF;i++){ print $i;}}';
- read -p $'\n       \e[31mPlease enter the ID of your server from the list above\e[0m \n          > ' ID
- curl -s -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" --request POST --data "{\"id\": ${ID}, \"subdomain\": \"${SUBDOMAIN}\" }" https://$SUBDOMAIN.$HOST/api/admin/addSubdomain
- echo -e "\n       ${GREEN}Congratulations! You are done. Dont forget to give yourself the "${DISCORD_ROLE}" role on your server${RESTORE}"
-fi
+while true; do
+    read -p $'       \e[31mType \"DONE\" when you\'ve finished inviting your bot\e[0m \n          > ' CONT
+    if [ "$CONT" = "DONE" ]; then
+        curl -s -H "Authorization: Bearer $ADMIN_KEY" https://$SUBDOMAIN.$HOST/api/admin/list | awk -F{ '{for(i=1;i<=NF;i++){ print $i;}}'
+        read -p $'\n       \e[31mPlease enter the ID of your server from the list above\e[0m \n          > ' ID
+        curl -s -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" --request POST --data "{\"id\": ${ID}, \"subdomain\": \"${SUBDOMAIN}\" }" https://$SUBDOMAIN.$HOST/api/admin/addSubdomain
+        sleep 5
+        docker-compose restart
+        echo -e "\n       ${GREEN}Congratulations! You are done. Dont forget to give yourself the "${DISCORD_ROLE}" role on your discord server${RESTORE}"
+        break;
+    else
+        echo "Please invite the bot to your server and type \"DONE\""
+    fi
+done

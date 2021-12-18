@@ -1,18 +1,16 @@
 version: '3.7'
 
 services:
-
   nginx-certbot:
     image: logoffski/portaler-nginx-certbot:v1
     env_file:
-      - .env
+      - .env.docker
     restart: unless-stopped
     ports:
       - '80:80'
       - '443:443'
     depends_on:
       - api_server
-      - rediscache
     networks:
       - portaler
     volumes:
@@ -21,7 +19,7 @@ services:
   pgdb:
     image: postgres:13-alpine
     env_file:
-      - .env
+      - .env.docker
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/postgresql/data
@@ -30,14 +28,14 @@ services:
   rediscache:
     image: bitnami/redis:6.0
     env_file:
-      - .env
+      - .env.docker
     restart: unless-stopped
     networks:
-     - portaler
+      - portaler
   discord_bot:
     image: mawburn/portaler-bot:latest
     env_file:
-      - .env
+      - .env.docker
     restart: unless-stopped
     environment:
       - API_URL=https://api_server/
@@ -49,7 +47,7 @@ services:
   api_server:
     image: mawburn/portaler:latest
     env_file:
-      - .env
+      - .env.docker
     restart: unless-stopped
     ports:
       - '127.0.0.1:7777:4242'
@@ -61,7 +59,7 @@ services:
   bin_etl:
     image: mawburn/portaler-etl:latest
     env_file:
-      - .env
+      - .env.docker
     depends_on:
       - pgdb
       - rediscache
