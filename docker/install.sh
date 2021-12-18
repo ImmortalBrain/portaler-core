@@ -11,9 +11,9 @@ while true; do
  curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --yes --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg;
  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null;
  apt-get update; apt-get install -y docker-ce docker-ce-cli containerd.io;
- curl -L "https://github.com/docker/compose/releases/download/1.28.6/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
+ curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose;
  chmod +x /usr/local/bin/docker-compose; 
- sleep 10; break;;
+ sleep 10; systemctl docker start; break;;
         [Nn]* ) break;;
         * ) echo "Please answer yes(y) or no(n)";;
     esac
@@ -30,6 +30,8 @@ echo -e "       ${GREEN}https://discord.com/oauth2/authorize?client_id=${DISCORD
 while true; do
     read -p $'       \e[31mType \"DONE\" when you\'ve finished inviting your bot\e[0m \n          > ' CONT
     if [ "$CONT" = "DONE" ]; then
+        echo  "Please wait....\n"
+        sleep 10
         curl -sk -H "Authorization: Bearer $ADMIN_KEY" https://localhost/api/admin/list/ | awk -F{ '{for(i=1;i<=NF;i++){ print $i;}}'
         read -p $'\n       \e[31mPlease enter the ID of your server from the list above\e[0m \n          > ' ID
         curl -sk -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" --request POST --data "{\"id\": ${ID}, \"subdomain\": \"${SUBDOMAIN}\" }" https://localhost/api/admin/addSubdomain
