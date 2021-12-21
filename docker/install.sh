@@ -23,24 +23,31 @@ curl https://raw.githubusercontent.com/Logoffski/portaler-core/docker_test/docke
 curl https://raw.githubusercontent.com/Logoffski/portaler-core/docker_test/docker/docker-compose.yml  --output ./docker-compose.yml
 sed -i "s/example.com/"${SUBDOMAIN}"."${HOST}"/g" ./user_conf.d/portaler.conf
 sleep 1
-docker-compose up -d
-sleep 5
-echo -e "       ${RED}Open the link below in your browser to invite the bot to your discord server${RESTORE}"
-echo -e "       ${GREEN}https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_TOKEN}&scope=bot&permissions=268435456${RESTORE}"
-while true; do
-    read -p $'       \e[31mType \"DONE\" when you\'ve finished inviting your bot\e[0m \n          > ' CONT
-    if [ "$CONT" = "DONE" ]; then
-        echo -e "Sleeping to make sure DB propagates....\n"
-        sleep 10
-        curl -sk -H "Authorization: Bearer $ADMIN_KEY" https://localhost/api/admin/list/ | awk -F{ '{for(i=1;i<=NF;i++){ print $i;}}'
-        read -p $'\n       \e[31mPlease enter the ID of your server from the list above\e[0m \n          > ' ID
-        curl -sk -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" --request POST --data "{\"id\": ${ID}, \"subdomain\": \"${SUBDOMAIN}\" }" https://localhost/api/admin/addSubdomain
-        echo -e "\n       ${GREEN}Almost done btw${RESTORE}"
-        sleep 10
-        docker-compose restart
-        echo -e "\n       ${GREEN}Congratulations! You are done. Dont forget to give yourself the "${DISCORD_ROLE}" role on your discord server${RESTORE}"
-        break;
-    else
-        echo "Please invite the bot to your server and type \"DONE\""
-    fi
-done
+echo -e "       ${GREEN}Checking if your domain is accessible...${RESTORE}"
+if ping -c 1 $SUBDOMAIN.$HOST &> /dev/null
+then
+  echo -e "       ${GREEN}$SUBDOMAIN.$HOST seems to be accessible, starting the containers...${RESTORE}"
+  docker-compose up -d
+  sleep 5
+  echo -e "       ${RED}Open the link below in your browser to invite the bot to your discord server${RESTORE}"
+  echo -e "       ${GREEN}https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_TOKEN}&scope=bot&permissions=268435456${RESTORE}"
+  while true; do
+      read -p $'       \e[31mType \"DONE\" when you\'ve finished inviting your bot\e[0m \n          > ' CONT
+      if [ "$CONT" = "DONE" ]; then
+          echo -e "Sleeping to make sure DB propagates....\n"
+          sleep 10
+          curl -sk -H "Authorization: Bearer $ADMIN_KEY" https://localhost/api/admin/list/ | awk -F{ '{for(i=1;i<=NF;i++){ print $i;}}'
+          read -p $'\n       \e[31mPlease enter the ID of your server from the list above\e[0m \n          > ' ID
+          curl -sk -H "Authorization: Bearer $ADMIN_KEY" -H "Content-Type: application/json" --request POST --data "{\"id\": ${ID}, \"subdomain\": \"${SUBDOMAIN}\" }" https://localhost/api/admin/addSubdomain
+          echo -e "\n       ${GREEN}Almost done btw${RESTORE}"
+          sleep 10
+          docker-compose restart
+          echo -e "\n       ${GREEN}Congratulations! You are done. Dont forget to give yourself the "${DISCORD_ROLE}" role on your discord server${RESTORE}"
+          break;
+      else
+          echo "Please invite the bot to your server and type \"DONE\""
+      fi
+  done
+else
+  echo -e "       ${RED}Your domain is not accessible! Please check your DNS settings.${RESTORE}"
+fi
